@@ -65,8 +65,8 @@ jobs:
       - name: Create Release Notes
         run: |
           echo "## Kernel Release" > release_notes.txt
-          echo "- Device : ${{ env.DEVICE }}" >> release_notes.txt
-          echo "- Version: ${{ env.VERSION }}" >> release_notes.txt
+          echo "- Device : $DEVICE" >> release_notes.txt
+          echo "- Version: $VERSION" >> release_notes.txt
           echo "- CI Run : #${{ github.run_number }}" >> release_notes.txt
 
       - name: Upload Kernel to Telegram
