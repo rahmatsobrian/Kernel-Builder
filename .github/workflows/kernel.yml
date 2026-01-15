@@ -7,7 +7,6 @@ jobs:
   build:
     name: Kernel Builder
     runs-on: ubuntu-latest
-
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
       CCACHE_NOHASHDIR: "true"
@@ -20,18 +19,12 @@ jobs:
       - name: Setup packages
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y \
-            repo bc bison build-essential curl ccache coreutils flex \
-            g++-multilib gcc-multilib git gnupg gperf libxml2 \
-            lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev \
-            imagemagick lunzip lzop schedtool squashfs-tools \
-            xsltproc zip zlib1g-dev perl xmlstarlet virtualenv \
-            xz-utils rr jq pngcrush git-lfs openjdk-11-jdk wget \
-            lib32readline-dev libssl-dev android-sdk-libsparse-utils \
-            lld libc6-dev-i386 x11proto-core-dev libx11-dev \
-            libgl1-mesa-dev unzip fontconfig ca-certificates \
-            cpio bsdmainutils lz4 aria2 rclone ssh-client rsync \
-            python-is-python3 python3 zstd
+          sudo apt-get -y install repo bc bison build-essential curl ccache coreutils flex g++-multilib gcc-multilib git gnupg \
+          gperf libxml2 lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libwxgtk3.0-gtk3-dev imagemagick lunzip lzop schedtool squashfs-tools xsltproc zip \
+          zlib1g-dev perl xmlstarlet virtualenv xz-utils rr jq libncurses5 pngcrush lib32ncurses5-dev git-lfs libxml2 openjdk-11-jdk wget lib32readline-dev \
+          libssl-dev libxml2-utils android-sdk-libsparse-utils lld zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \
+          lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig ca-certificates bc cpio imagemagick \
+          bsdmainutils lz4 aria2 rclone ssh-client libncurses5 libssl-dev rsync schedtool python-is-python3 libarchive-tools python3 zstd
 
       - name: Set swap to 10G
         uses: pierotofy/set-swap-space@master
@@ -40,52 +33,39 @@ jobs:
 
       - name: Clone kernel repo
         run: |
-          git clone https://github.com/rahmatsobrian/kernel_xiaomi_mi8937_4.19.git kernel
+          git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/SingkoLab/kernel_xiaomi_batu.git -b new kernel --depth=1
+          cd kernel 
 
-      - name: Build Kernel
+      - name: Build
         run: |
           cd kernel
-          wget https://raw.githubusercontent.com/rahmatsobrian/Kernel-Builder/main/config.env
-          wget https://raw.githubusercontent.com/rahmatsobrian/Kernel-Builder/main/build.sh
-          chmod +x build.sh
+          wget https://raw.githubusercontent.com/SingkoLab/Kernel-Builder/batu/config.env
+          wget https://raw.githubusercontent.com/SingkoLab/Kernel-Builder/batu/build.sh && chmod +x ./build.sh
+          echo "Building kernel"
           ./build.sh
 
       - name: Extract Version Info
+        id: extract_version_info
         run: |
           FILE_NAME=$(basename kernel/builds/*.zip)
-          KERNEL_NAME=$(echo "$FILE_NAME" | cut -d'-' -f4)
-          VERSION=$(echo "$FILE_NAME" | cut -d'-' -f5)
-          DEVICE=$(echo "$FILE_NAME" | cut -d'-' -f6)
-
-          echo "KERNEL_NAME=$KERNEL_NAME" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "DEVICE=$DEVICE" >> $GITHUB_ENV
-          echo "FILE_PATH=kernel/builds/$FILE_NAME" >> $GITHUB_ENV
+          KERNEL_NAME=$(echo $FILE_NAME | cut -d'-' -f4)
+          VERSION=$(echo $FILE_NAME | cut -d'-' -f5)
+          DEVICE=$(echo $FILE_NAME | cut -d'-' -f6)
+          echo "KERNEL_NAME=${KERNEL_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "DEVICE=${DEVICE}" >> $GITHUB_ENV
 
       - name: Create Release Notes
         run: |
-          echo "## Kernel Release" > release_notes.txt
-          echo "- Device : $DEVICE" >> release_notes.txt
-          echo "- Version: $VERSION" >> release_notes.txt
-          echo "- CI Run : #${{ github.run_number }}" >> release_notes.txt
-
-      - name: Upload Kernel to Telegram
-        run: |
-          curl -F chat_id="${{ secrets.TG_CHAT_ID }}" \
-               -F document=@"${{ env.FILE_PATH }}" \
-               -F caption="📦 *Kernel Build Released (Need Test First)*
-
-          Device : $DEVICE
-          Version: $VERSION
-          CI Run : #${{ github.run_number }}" \
-               -F parse_mode=Markdown \
-               https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendDocument
+          touch release_notes.txt
+          echo "## Release Notes" > release_notes.txt
+          echo "- Initial Release" >> release_notes.txt
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ${{ env.FILE_PATH }}
+          artifacts: kernel/builds/*.zip
           tag: "${{ github.run_number }}"
           name: "Release ${{ env.VERSION }}"
-          bodyFile: release_notes.txt
           token: ${{ secrets.PAT_TOKEN }}
+          bodyFile: release_notes.txt
