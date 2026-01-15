@@ -143,7 +143,7 @@ function kernelsu() {
           if [ ! -f "${MainPath}/KernelSU/README.md" ]; then
              cd ${MainPath}
              curl -LSs "https://raw.githubusercontent.com/SingkoLab/Kernel-Builder/batu/ksu_setup.sh" | bash -
-             sed -i "s/CONFIG_KSU=n/CONFIG_KSU=y/g" arch/${ARCH}/configs/vemdor/${DEVICE_DEFCONFIG}
+             sed -i "s/CONFIG_KSU=n/CONFIG_KSU=y/g" arch/${ARCH}/configs/vendor/${DEVICE_DEFCONFIG}
           fi
     fi
 }
