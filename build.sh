@@ -143,7 +143,7 @@ function kernelsu() {
           if [ ! -f "${MainPath}/KernelSU/README.md" ]; then
              cd ${MainPath}
              curl -LSs "https://raw.githubusercontent.com/SingkoLab/Kernel-Builder/batu/ksu_setup.sh" | bash -
-             sed -i "s/CONFIG_KSU=n/CONFIG_KSU=y/g" arch/${ARCH}/configs/${DEVICE_DEFCONFIG}
+             sed -i "s/CONFIG_KSU=n/CONFIG_KSU=y/g" arch/${ARCH}/configs/vemdor/${DEVICE_DEFCONFIG}
           fi
     fi
 }
@@ -168,9 +168,9 @@ START=$(date +"%s")
 
 compile(){
 if [ "$ClangName" = "proton" ]; then
-  sed -i 's/CONFIG_LLVM_POLLY=y/# CONFIG_LLVM_POLLY is not set/g' ${MainPath}/arch/$ARCH/configs/$DEVICE_DEFCONFIG || echo ""
+  sed -i 's/CONFIG_LLVM_POLLY=y/# CONFIG_LLVM_POLLY is not set/g' ${MainPath}/arch/$ARCH/configs/vendor/$DEVICE_DEFCONFIG || echo ""
 else
-  sed -i 's/# CONFIG_LLVM_POLLY is not set/CONFIG_LLVM_POLLY=y/g' ${MainPath}/arch/$ARCH/configs/$DEVICE_DEFCONFIG || echo ""
+  sed -i 's/# CONFIG_LLVM_POLLY is not set/CONFIG_LLVM_POLLY=y/g' ${MainPath}/arch/$ARCH/configs/vendor/$DEVICE_DEFCONFIG || echo ""
 fi
 make O=out ARCH=$ARCH $DEVICE_DEFCONFIG
 make -j"$CORES" ARCH=$ARCH O=out \
