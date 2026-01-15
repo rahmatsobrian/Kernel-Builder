@@ -152,7 +152,7 @@ function kernelsu() {
 DEVICE_MODEL="Motorola Moto G45"
 DEVICE_CODENAME="fogos"
 BUILD_TIME="$(TZ="Asia/Jakarta" date "+%m%d%Y")"
-export DEVICE_DEFCONFIG="vendor/holi-qgki_defconfig"
+export DEVICE_DEFCONFIG="vendor/fogos-qgki_defconfig"
 export ARCH="arm64"
 export KBUILD_BUILD_USER="RahmatSobrian"
 export KBUILD_BUILD_HOST="SingkoLab"
