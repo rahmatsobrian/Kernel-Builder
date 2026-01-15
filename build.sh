@@ -76,7 +76,7 @@ function getclang() {
       echo "[!] Clang is set to zyc, cloning it..."
       mkdir -p ${MainClangPath}-zyc
       cd clang-zyc
-      wget -q $(curl -k https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt 2>/dev/null) -O "zyc-clang.tar.gz"
+      wget -q $(curl -k https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-16-link.txt 2>/dev/null) -O "zyc-clang.tar.gz"
       tar -xf zyc-clang.tar.gz
       ClangPath="${MainClangPath}"-zyc
       export PATH="${ClangPath}/bin:${PATH}"
